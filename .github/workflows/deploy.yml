@@ -30,10 +30,21 @@ jobs:
 
       - name: Deploy to EC2 via SSM
         run: |
+          DEPLOY_PATH="${{ secrets.EC2_DEPLOY_PATH }}"
+          PARAMS=$(jq -n --arg path "$DEPLOY_PATH" '{
+            commands: [
+              "set -e",
+              ("DEPLOY_USER=$(stat -c %U " + $path + ")"),
+              ("sudo -u \"$DEPLOY_USER\" git -C " + $path + " pull origin main"),
+              ("sudo docker-compose -f " + $path + "/docker-compose.yml up -d --build"),
+              ("sudo docker-compose -f " + $path + "/docker-compose.yml exec -T app composer install --no-dev --optimize-autoloader")
+            ]
+          }')
+
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters "commands=[\"cd ${{ secrets.EC2_DEPLOY_PATH }}\",\"git pull origin main\",\"sudo docker-compose up -d --build\",\"sudo docker-compose exec -T app composer install --no-dev --optimize-autoloader\"]" \
+            --parameters "$PARAMS" \
             --region ap-northeast-1 \
             --query "Command.CommandId" \
             --output text)
