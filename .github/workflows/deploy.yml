@@ -26,12 +26,7 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters 'commands=[
-              "cd ~/my_media",
-              "git pull origin main",
-              "sudo docker-compose up -d --build",
-              "sudo docker-compose exec -T app composer install --no-dev --optimize-autoloader"
-            ]' \
+            --parameters "commands=[\"cd ${{ secrets.EC2_DEPLOY_PATH }}\",\"git pull origin main\",\"sudo docker-compose up -d --build\",\"sudo docker-compose exec -T app composer install --no-dev --optimize-autoloader\"]" \
             --region ap-northeast-1 \
             --query "Command.CommandId" \
             --output text)
