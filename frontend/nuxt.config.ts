@@ -5,4 +5,10 @@ export default defineNuxtConfig({
   devServer: {
     host: '0.0.0.0',
   },
+  runtimeConfig: {
+    apiBaseInternal: 'http://app:8080',
+    public: {
+      apiBase: 'http://localhost:8080',
+    },
+  },
 })
