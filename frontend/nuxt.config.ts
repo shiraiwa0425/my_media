@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     host: '0.0.0.0',
   },
   runtimeConfig: {
-    apiBaseInternal: 'http://app:8080',
+    apiBaseInternal: 'http://localhost:8080',
     public: {
       apiBase: 'http://localhost:8080',
     },
